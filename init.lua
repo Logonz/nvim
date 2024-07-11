@@ -931,6 +931,7 @@ require('lazy').setup({
   {
     'voldikss/vim-floaterm',
     config = function()
+      -- Add binding for lazygit
       vim.keymap.set('n', '<leader>g', function()
         vim.cmd("FloatermNew --name=LazyGit --title=LazyGit --autoclose=2 lazygit")
       end)
