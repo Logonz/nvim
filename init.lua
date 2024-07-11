@@ -83,6 +83,14 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+local uname = vim.loop.os_uname()
+
+_G.OS = uname.sysname
+_G.IS_MAC = OS == 'Darwin'
+_G.IS_LINUX = OS == 'Linux'
+_G.IS_WINDOWS = OS:find('Windows') and true or false
+_G.IS_WSL = IS_LINUX and uname.release:lower():find('microsoft') and true or false
+-- vim.loop.os_uname().release:lower():find('microsoft')
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -114,6 +122,60 @@ vim.opt.showmode = false
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
 vim.opt.clipboard = 'unnamedplus'
+
+-- Only load win32yank when windows or wsl
+if (_G.IS_WSL) then --or _G.IS_WINDOWS)
+  require("io")
+  local path = 'export PATH="$PATH:/mnt/c/Programs/win32yank"'
+  local zshrc = io.open(vim.fs.normalize("~/.zshrc"), "r")
+  local bashrc = io.open(vim.fs.normalize("~/.bashrc"), "r")
+  local rc = zshrc or bashrc
+
+  local missing = true
+  if (rc) then
+    ---@param line string
+    for line in rc:lines() do
+      if (line == path) then
+        print("win32yank already installed")
+        missing = false
+      end
+    end
+    -- Close the files.
+    if (bashrc) then bashrc:close() end
+    if (zshrc) then zshrc:close() end
+
+    if missing then
+      os.execute("mkdir -p /mnt/c/Programs && mkdir -p /mnt/c/Programs/win32yank")
+      os.execute(
+        "wget -nv -O /mnt/c/Programs/win32yank/win32yank-x64.zip https://github.com/equalsraf/win32yank/releases/latest/download/win32yank-x64.zip"
+      )
+      os.execute("unzip /mnt/c/Programs/win32yank/win32yank-x64.zip -d /mnt/c/Programs/win32yank")
+
+      local wrc = io.open(vim.fs.normalize(zshrc and "~/.zshrc" or "~/.bashrc"), "a+")
+      if (wrc) then
+        wrc:write('export PATH="$PATH:/mnt/c/Programs/win32yank"')
+        wrc:flush()
+        wrc:close()
+      end
+    end
+
+
+    vim.g.clipboard = {
+      name = 'win32yank-wsl',
+      copy = {
+        ['+'] = 'win32yank.exe -i --crlf',
+        ['*'] = 'win32yank.exe -i --crlf',
+      },
+      paste = {
+        ['+'] = 'win32yank.exe -o --lf',
+        ['*'] = 'win32yank.exe -o --lf',
+      },
+      cache_enabled = 0,
+    }
+  end
+end
+
+
 
 -- Enable break indent
 vim.opt.breakindent = true
