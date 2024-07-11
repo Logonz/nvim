@@ -90,7 +90,6 @@ _G.IS_MAC = OS == 'Darwin'
 _G.IS_LINUX = OS == 'Linux'
 _G.IS_WINDOWS = OS:find('Windows') and true or false
 _G.IS_WSL = IS_LINUX and uname.release:lower():find('microsoft') and true or false
--- vim.loop.os_uname().release:lower():find('microsoft')
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -383,6 +382,7 @@ require('lazy').setup({
         cond = function()
           return vim.fn.executable 'make' == 1
         end,
+        "debugloop/telescope-undo.nvim",
       },
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
@@ -425,6 +425,9 @@ require('lazy').setup({
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          undo = {
+            -- telescope-undo.nvim config, see below  https://github.com/debugloop/telescope-undo.nvim
+          },
         },
       }
 
@@ -432,6 +435,7 @@ require('lazy').setup({
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
 
+      pcall(require('telescope').load_extension, 'undo')
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
@@ -444,6 +448,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+
+      -- Undo
+      vim.keymap.set('n', '<leader>u', function() vim.cmd("Telescope undo") end)
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
