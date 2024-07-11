@@ -309,12 +309,37 @@ require('lazy').setup({
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
+      --      signs = {
+      --        add = { text = '+' },
+      --        change = { text = '~' },
+      --        delete = { text = '_' },
+      --        topdelete = { text = '‾' },
+      --        changedelete = { text = '~' },
+      --      },
+      -- GitLens type line blame
+      current_line_blame = true,
+      current_line_blame_opts = {
+        delay = 0,
+        virt_text_pos = 'eol',
+      },
+      current_line_blame_formatter = '  <author>, <author_time:%R> - <summary>',
+      -- Toggle the line numbers to be the same color
+      numhl = true,
       signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
+        add          = { text = '┃' },
+        change       = { text = '┃' },
+        delete       = { text = '_' },
+        topdelete    = { text = '‾' },
         changedelete = { text = '~' },
+        untracked    = { text = '┆' },
+      },
+      signs_staged = {
+        add          = { text = '┃' },
+        change       = { text = '┃' },
+        delete       = { text = '_' },
+        topdelete    = { text = '‾' },
+        changedelete = { text = '~' },
+        untracked    = { text = '┆' },
       },
     },
   },
@@ -947,7 +972,32 @@ require('lazy').setup({
       end)
     end,
   },
+  {
+    'petertriho/nvim-scrollbar',
+    config = function()
+      local colors = require("tokyonight.colors").setup()
 
+      require("scrollbar").setup({
+        handlers = {
+          gitsigns = true,
+        },
+        handle = {
+          color = colors.bg_highlight,
+        },
+        marks = {
+          Search = { color = colors.orange },
+          Error = { color = colors.error },
+          Warn = { color = colors.warning },
+          Info = { color = colors.info },
+          Hint = { color = colors.hint },
+          Misc = { color = colors.purple },
+          GitChange = { color = colors.blue1 },
+          GitAdd = { color = colors.green },
+          GitDelete = { color = colors.red },
+        }
+      })
+    end,
+  },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
