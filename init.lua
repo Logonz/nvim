@@ -174,8 +174,6 @@ if (_G.IS_WSL) then --or _G.IS_WINDOWS)
   end
 end
 
-
-
 -- Enable break indent
 vim.opt.breakindent = true
 
