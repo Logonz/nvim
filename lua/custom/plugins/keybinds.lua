@@ -43,6 +43,8 @@ vim.keymap.set('n', "<leader>'", "<Plug>(comment_toggle_linewise_current)",
 -- Visual keybinds
 vim.keymap.set('x', "<leader>'", "<Plug>(comment_toggle_linewise_visual)",
   { remap = true, desc = "▌ Comment selected lines" })
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv") -- This binding makes it so that if you have multiple lines selected you can move them using J
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv") -- This binding makes it so that if you have multiple lines selected you can move them using K
 
 -- Undo specific rebinds, it makes it so that multiple undo points are created for the characters below
 --
