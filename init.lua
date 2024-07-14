@@ -1033,8 +1033,9 @@ require('lazy').setup({
     config = function()
       -- Add binding for lazygit
       vim.keymap.set('n', '<leader>g', function()
-        vim.cmd("FloatermNew --name=LazyGit --title=LazyGit --autoclose=2 lazygit")
-      end)
+          vim.cmd("FloatermNew --name=LazyGit --title=LazyGit --autoclose=2 lazygit")
+        end,
+        { desc = "Open Lazy[G]it" })
     end,
   },
   {
