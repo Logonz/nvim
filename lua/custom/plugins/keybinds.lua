@@ -46,6 +46,17 @@ vim.keymap.set('x', "<leader>'", "<Plug>(comment_toggle_linewise_visual)",
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv") -- This binding makes it so that if you have multiple lines selected you can move them using J
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv") -- This binding makes it so that if you have multiple lines selected you can move them using K
 
+-- Pasting over a selected word does not change copy buffer (aka it stays the same)
+vim.keymap.set("x", "<leader>p", "\"_dP")
+
+-- Copying to OS clipboard
+vim.keymap.set("n", "<leader>y", "\"+y", { desc = "▌ Yank to System Clipboard" })
+vim.keymap.set("v", "<leader>y", "\"+y", { desc = "▌ Yank to System Clipboard" })
+vim.keymap.set("n", "<leader>Y", "\"+Y", { desc = "▌ Rest of line Yank to System Clipboard" }) -- Copy to the end of the line
+vim.keymap.set("n", "<leader><C-p>", "\"+p", { desc = "▌ Paste from System Clipboard" })
+vim.keymap.set("v", "<leader><C-p>", "\"+p", { desc = "▌ Paste from System Clipboard" })
+-- vim.keymap.set("i", "<C-P>", "<CMD>\"+p<CR>", { desc = "Paste from System Clipboard" }) -- This does not work, use CTRL+R (registers) -> + (system-r) instead
+
 -- Undo specific rebinds, it makes it so that multiple undo points are created for the characters below
 --
 local opts = { noremap = true, silent = true, }
