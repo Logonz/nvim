@@ -893,7 +893,8 @@ require('lazy').setup({
           ['<C-y>'] = cmp.mapping.confirm { select = true },
 
           -- Add a more VSCODE like tab completetion
-          ['<Tab>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.confirm { select = true }, -- Modification by Logon
+
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
