@@ -23,6 +23,7 @@ return {
               separator = true -- use a "true" to enable the default, or set your own character
             }
           },
+          diagnostics = "nvim_lsp",
           -- sort_by = sort_by_relative_directory,
           -- TODO: Implement smart-tabs sorting
           -- sort_by = function(buffer_a, buffer_b)
@@ -57,7 +58,7 @@ return {
             -- buffers (tabs only) | table(int) | the numbers of the buffers in the tab
             -- tabnr (tabs only)   | int        | the "handle" of the tab, can be converted to its ordinal number using: `vim.api.nvim_tabpage_get_number(buf.tabnr)`
             local elements = bl.get_elements().elements
-            local name = buf.name
+            local name = buf.name:gsub("%.%w+$", "")
             local tab_idx = 0
             for tab_index, tab in pairs(elements) do
               -- print(tab_index, tab.name)
