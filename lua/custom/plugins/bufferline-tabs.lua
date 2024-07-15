@@ -58,7 +58,7 @@ return {
             -- buffers (tabs only) | table(int) | the numbers of the buffers in the tab
             -- tabnr (tabs only)   | int        | the "handle" of the tab, can be converted to its ordinal number using: `vim.api.nvim_tabpage_get_number(buf.tabnr)`
             local elements = bl.get_elements().elements
-            local name = buf.name:gsub("%.%w+$", "")
+            local name = buf.name:gsub("%..+?$", "")
             local tab_idx = 0
             for tab_index, tab in pairs(elements) do
               -- print(tab_index, tab.name)
