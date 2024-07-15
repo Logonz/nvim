@@ -14,7 +14,9 @@ return {
           ["<C-j>"] = false,
           ["g."] = false,
           ["g\\"] = false,
-          ["<M-h>"] = "actions.select_split",
+          ["<M-h>"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
+          ["<Esc>"] = "actions.close",
+          ["<M-v>"] = { "actions.select", opts = { vertical = true }, desc = "Open the entry in a vertical split" },
         },
         view_options = {
           show_hidden = true,
@@ -22,11 +24,12 @@ return {
         float = {
           padding = 10,
           max_width = math.floor(vim.api.nvim_win_get_width(0) * 0.8),
+          preview_split = "right",
         },
       }
 
       -- Open parent directory in current window
-      vim.keymap.set("n", "<Space>-", "<CMD>Oil<CR>", { desc = "Open parent directory", })
+      vim.keymap.set("n", "<Space>-", "<CMD>Oil --float<CR>", { desc = "Open parent directory", })
 
       -- Open parent directory in floating window
       vim.keymap.set("n", "-", require("oil").toggle_float)

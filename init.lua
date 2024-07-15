@@ -135,7 +135,7 @@ if (_G.IS_WSL) then --or _G.IS_WINDOWS)
     ---@param line string
     for line in rc:lines() do
       if (line == path) then
-        print("win32yank already installed")
+        -- print("win32yank already installed")
         missing = false
       end
     end
@@ -377,16 +377,16 @@ require('lazy').setup({
       -- Toggle the line numbers to be the same color
       numhl = true,
       signs = {
-        add          = { text = '┃' },
-        change       = { text = '┃' },
+        add          = { text = '▌' },
+        change       = { text = '▌' },
         delete       = { text = '_' },
         topdelete    = { text = '‾' },
         changedelete = { text = '~' },
         untracked    = { text = '┆' },
       },
       signs_staged = {
-        add          = { text = '┃' },
-        change       = { text = '┃' },
+        add          = { text = '▌' },
+        change       = { text = '▌' },
         delete       = { text = '_' },
         topdelete    = { text = '‾' },
         changedelete = { text = '~' },
@@ -410,26 +410,52 @@ require('lazy').setup({
   -- after the plugin has been loaded:
   --  config = function() ... end
 
-  {                     -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
+    -- TODO: This has released a version 3 > but the c-r key in insert doesn't show registers anymore...
+    -- Try it in the future
+    tag = "v2.1.0",
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
+      local wk = require('which-key')
 
       -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-        ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
-        ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-      }
-      -- visual mode
-      require('which-key').register({
-        ['<leader>h'] = { 'Git [H]unk' },
-      }, { mode = 'v' })
+      -- v3 way
+      if wk["add"] then
+        wk.add({
+          { '<leader>c', group = '[C]ode', },
+          { '<leader>d', group = '[D]ocument', },
+          { '<leader>r', group = '[R]ename', },
+          { '<leader>s', group = '[S]earch', },
+          { '<leader>w', group = '[W]orkspace', },
+          { '<leader>t', group = '[T]oggle', },
+          { '<leader>h', group = 'Git [H]unk', },
+          { '<leader>b', group = '[B]uffer', },
+        })
+        -- visual mode
+        wk.add({
+          { '<leader>h', group = 'Git [H]unk', },
+        }, { mode = { 'v' } })
+      else
+        --
+        -- v2 mode
+        -- Document existing key chains
+        wk.register {
+          ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
+          ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
+          ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
+          ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
+          ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+          ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
+          ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
+          ['<leader>b'] = { name = '[B]uffer', _ = 'which_key_ignore' },
+        }
+        -- visual mode
+        wk.register({
+          ['<leader>h'] = { 'Git [H]unk' },
+        }, { mode = 'v' })
+      end
     end,
   },
 
@@ -491,11 +517,21 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            -- i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+            -- i = { ["<C-q>"] = false, },
+            -- n = { ["<C-q>"] = false, },
+            -- {
+            --   ["<C-q>"] = false,
+            -- },
+          },
+          -- This setting makes it so that the shortest possible path is shown (Potential Performance impact)
+          path_display = {
+            -- TODO: Implement my own path display so that it shows all folders that are different until they all have the same parent folder.
+            -- "smart",
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -504,19 +540,24 @@ require('lazy').setup({
           undo = {
             -- telescope-undo.nvim config, see below  https://github.com/debugloop/telescope-undo.nvim
           },
+          smart_open = {
+            match_algorithm = "fzf",
+            disable_devicons = false,
+            show_scores = true,
+          },
         },
       }
 
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
-
       pcall(require('telescope').load_extension, 'undo')
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      -- vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>sf', function() vim.cmd("Telescope smart_open") end, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>st', builtin.builtin, { desc = '▌[S]earch Select [T]elescope' }) -- Modification by Logon (This is useless in daily work)
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       local function gf()
@@ -527,17 +568,49 @@ require('lazy').setup({
       end
       -- vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' }) -- Modifications by Logon
       vim.keymap.set('n', '<leader>sg', gf, { desc = '▌[S]earch [G]it files' }) -- Modifications by Logon
-      vim.keymap.set('n', '<C-g>', gf, { desc = '»Search [G]it files' }) -- Modifications by Logon
-      vim.keymap.set('i', '<C-g>', gf, { desc = '»Search [G]it files' }) -- Modifications by Logon
+      vim.keymap.set('n', '<C-g>', gf, { desc = '▌Search [G]it files' }) -- Modifications by Logon
+      vim.keymap.set('i', '<C-g>', gf, { desc = '▌Search [G]it files' }) -- Modifications by Logon
       vim.keymap.set('n', '<leader>ss', builtin.live_grep, { desc = '▌[SS]earch Ripgrep' }) -- Modifications by Logon
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      -- vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      local builtin = require('telescope.builtin')
+      local action_state = require('telescope.actions.state')
 
+      vim.keymap.set('n', '<leader><leader>',
+        function() --<C-e> source https://github.com/nvim-telescope/telescope.nvim/issues/621#issuecomment-2094924716S
+          builtin.buffers({
+            -- initial_mode = "normal",
+            initial_mode = "insert",
+            attach_mappings = function(prompt_bufnr, map)
+              local delete_buf = function()
+                local current_picker = action_state.get_current_picker(prompt_bufnr)
+                current_picker:delete_selection(function(selection)
+                  vim.api.nvim_buf_delete(selection.bufnr, { force = true })
+                end)
+              end
+
+              map('n', '<c-d>', delete_buf)
+              map('i', '<c-d>', delete_buf)
+
+              return true
+            end
+          }, {
+            sort_lastused = true,
+            sort_mru = true,
+            theme = "dropdown"
+          })
+        end)
+
+      -- TODO: This is a test to have the word under the cursor be the thing that is searched for first
+      vim.keymap.set('n', '<leader>st', function()
+        local cword = vim.fn.expand("<cword>")
+        builtin.live_grep({ default_text = cword })
+      end, { desc = '▌[SS]earch Ripgrep' }) -- Modifications by Logon
 
       -- Undo
-      vim.keymap.set('n', '<leader>u', function() vim.cmd("Telescope undo") end, { desc = "»Open Undo Tree" }) -- Modification by Logon
+      vim.keymap.set('n', '<leader>u', function() vim.cmd("Telescope undo") end, { desc = "▌Open Undo Tree" }) -- Modification by Logon
 
       -- Slightly advanced example of overriding default behavior and theme
       local function fz()
@@ -549,6 +622,8 @@ require('lazy').setup({
       end
       vim.keymap.set('n', '<leader>/', fz, { desc = '[/] Fuzzily search in current buffer' })
       vim.keymap.set('n', '<C-f>', fz, { desc = 'CTRL+F Fuzzily search in current buffer' })
+      -- TODO: Implement this for insert mode!
+      -- vim.keymap.set('i', '<C-f>', fz, { desc = 'CTRL+F Fuzzily search in current buffer' })
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
@@ -753,6 +828,19 @@ require('lazy').setup({
             },
           },
         },
+        -- Python linter
+        -- https://github.com/astral-sh/ruff
+        ruff = {
+
+        },
+        -- Ansible Language Server
+        -- https://github.com/ansible/vscode-ansible
+        ansiblels = {
+
+        },
+        gopls = {
+
+        }
       }
 
       -- Ensure the servers and tools above are installed
@@ -791,7 +879,7 @@ require('lazy').setup({
     lazy = false,
     keys = {
       {
-        '<leader>f',
+        '<leader>bf', -- Changed from <leader>f
         function()
           require('conform').format { async = true, lsp_fallback = true }
         end,
@@ -949,13 +1037,19 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
   },
-
+  {
+    "olimorris/onedarkpro.nvim",
+    priority = 1001, -- Ensure it loads first
+    init = function()
+      vim.cmd("colorscheme onedark")
+    end,
+  },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -980,17 +1074,17 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      -- local statusline = require 'mini.statusline' -- Modification by Logon
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      -- statusline.setup { use_icons = vim.g.have_nerd_font } -- Modification by Logon
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- statusline.section_location = function()  -- Modification by Logon
+      -- return '%2l:%-2v'  -- Modification by Logon
+      -- end  -- Modification by Logon
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -1000,7 +1094,46 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'vim',
+        'vimdoc',
+        'python',
+        "c_sharp",
+        "css",
+        "csv",
+        "dockerfile",
+        "editorconfig",
+        "git_config",
+        "git_rebase",
+        "gitattributes",
+        "gitcommit",
+        "gitignore",
+        "go",
+        "gomod",
+        "html",
+        "ini",
+        "java",
+        "javascript",
+        "jsdoc",
+        "json",
+        "json5",
+        "regex",
+        "sql",
+        "ssh_config",
+        "terraform",
+        "toml",
+        "tsx",
+        "typescript",
+        "xml",
+        "yaml",
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
