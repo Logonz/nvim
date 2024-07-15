@@ -46,6 +46,9 @@ return {
           --   if buffer_b and not buffer_a then return true end
           --   return vim.fn.getftime(buffer_a.path) > vim.fn.getftime(buffer_b.path)
           -- end,
+
+          ---@param buf { name: string, path: string, bufnr: number, buffers: number[], tabnr: number }
+          ---@return string
           name_formatter = function(buf)
             -- buf contains:
             -- name                | str        | the basename of the active file
