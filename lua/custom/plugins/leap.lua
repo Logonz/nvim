@@ -67,7 +67,7 @@ return {
         end
       end
       -- require("leap").init_highlight(true)
-      require('leap').opts.equivalence_classes = { ' \t\r\n', '([{', ')]}', '\'"`' }
+      -- require('leap').opts.equivalence_classes = { ' \t\r\n', '([{', ')]}', '\'"`' }
       vim.api.nvim_create_autocmd('ColorScheme', {
         callback = fix_colors
       })
